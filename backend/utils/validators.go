@@ -14,8 +14,8 @@ type ValidationCriteria struct {
 }
 
 type ResponseValidation struct {
-	Success bool
-	Error   ErrorValidationMessage
+	Status bool
+	Error  ErrorValidationMessage
 }
 
 func ValidateData(data interface{}, validations map[string]ValidationCriteria) ResponseValidation {
@@ -41,13 +41,13 @@ func ValidateData(data interface{}, validations map[string]ValidationCriteria) R
 		}
 		if len(errorMessages) > 0 {
 			errorMessage = ErrorMessage("Los datos enviados no son válidos.", errorMessages)
-			return ResponseValidation{Success: false, Error: errorMessage}
+			return ResponseValidation{Status: false, Error: errorMessage}
 		} else {
-			return ResponseValidation{Success: true}
+			return ResponseValidation{Status: true}
 		}
 	default:
 		errorMessage = ErrorMessage("El dato enviado no es válido o no se pudo procesar.", map[string][]string{"dato": {"Tipo de dato no soportado."}})
-		return ResponseValidation{Success: false, Error: errorMessage}
+		return ResponseValidation{Status: false, Error: errorMessage}
 	}
 }
 

@@ -2,7 +2,7 @@ package utils
 
 var Regex = map[string]string{
 	"cedula":     `^([0-9]{7,9})$`,
-	"caracteres": `^[a-zA-Z0-9Ññáéíóú \b]{1,100}$`,
+	"caracteres": `^[a-zA-Z]`,
 	"rif":        `^([vejpgVEJPG]{1})([0-9]{9})$`,
 	"enteros":    `^([0-9]{1,2})$`,
 	"dinero":     `^\d{1,3}(?:\.\d\d\d)*(?:,\d{1,2})?$`,
