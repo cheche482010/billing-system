@@ -14,11 +14,11 @@ type ValidationCriteria struct {
 }
 
 type ResponseValidation struct {
-	Status bool
-	Error  int64
+	Success bool
+	Error   ErrorValidationMessage
 }
 
-func ValidateData(data interface{}, validations map[string]ValidationCriteria) (interface{}, error) {
+func ValidateData(data interface{}, validations map[string]ValidationCriteria) ResponseValidation {
 	var errorMessage ErrorValidationMessage
 	switch v := data.(type) {
 	case string:
@@ -40,23 +40,29 @@ func ValidateData(data interface{}, validations map[string]ValidationCriteria) (
 			}
 		}
 		if len(errorMessages) > 0 {
-			errorMessage = ErrorValidationMessage{
-				Code:      "400",
-				Status:    "error",
-				Error:     true,
-				Message:   "Los datos enviados no son válidos.",
-				Errors:    errorMessages,
-				Timestamp: time.Now().Format(time.RFC3339),
-			}
-			return errorMessage, nil
+			errorMessage = ErrorMessage("Los datos enviados no son válidos.", errorMessages)
+			return ResponseValidation{Success: false, Error: errorMessage}
+		} else {
+			return ResponseValidation{Success: true}
 		}
-		return true, nil
 	default:
-		return false, nil
+		errorMessage = ErrorMessage("El dato enviado no es válido o no se pudo procesar.", map[string][]string{"dato": {"Tipo de dato no soportado."}})
+		return ResponseValidation{Success: false, Error: errorMessage}
 	}
 }
 
 func validatePattern(s string, pattern string) bool {
 	match, _ := regexp.MatchString(pattern, s)
 	return match
+}
+
+func ErrorMessage(messageMain string, errorsMap map[string][]string) ErrorValidationMessage {
+	return ErrorValidationMessage{
+		Code:      "400",
+		Status:    "error",
+		Error:     true,
+		Message:   messageMain,
+		Errors:    errorsMap,
+		Timestamp: time.Now().Format(time.RFC3339),
+	}
 }
