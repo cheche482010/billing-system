@@ -4,7 +4,6 @@ import (
 	"billing-system/models"
 	"billing-system/repositories"
 	"billing-system/utils"
-	"fmt"
 	"time"
 )
 
@@ -17,8 +16,8 @@ func NewClientesService(repo *repositories.ClientesRepository) *ClientesService 
 }
 
 type ResponseService struct {
-	Success bool
-	Error   utils.ErrorSqlMessage
+	Status  bool
+	Error   interface{}
 	Message ResponseSuccess
 }
 
@@ -42,32 +41,32 @@ func (s *ClientesService) Create(cliente models.Cliente) ResponseService {
 		},
 	}
 
-	result, err := utils.ValidateData(cliente.Nombre, validationRules)
+	validation := utils.ValidateData(cliente.Nombre, validationRules)
 
-	if err != nil {
-		return fmt.Errorf("%w: %v", err, result)
-	}
+	if validation.Status {
+		response := s.repo.Create(cliente)
 
-	response := s.repo.Create(cliente)
-
-	if response.Status {
-		resp := ResponseSuccess{
-			Code:      200,
-			Status:    "success",
-			Message:   "Request successfully processed",
-			Error:     false,
-			Timestamp: time.Now().Format(time.RFC3339),
-			Response: map[string]interface{}{
-				"Code": 201,
-				"Data": map[string]interface{}{
-					"id": response.ID,
+		if response.Status {
+			resp := ResponseSuccess{
+				Code:      200,
+				Status:    "success",
+				Message:   "Request successfully processed",
+				Error:     false,
+				Timestamp: time.Now().Format(time.RFC3339),
+				Response: map[string]interface{}{
+					"Code": 201,
+					"Data": map[string]interface{}{
+						"id": response.ID,
+					},
+					"Message": "",
 				},
-				"Message": "",
-			},
+			}
+			return ResponseService{Status: true, Message: resp}
+		} else {
+			return ResponseService{Status: false, Error: response.Error}
 		}
-		return ResponseService{Success: true, Message: resp}
 	} else {
-		return ResponseService{Success: false, Error: response.Error}
+		return ResponseService{Status: false, Error: validation.Error}
 	}
 
 }

@@ -20,7 +20,7 @@ func (c *ClientesController) Test(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateHandler handles POST requests to create a new cliente
-func (c *ClientesController) CreateHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ClientesController) Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -32,21 +32,14 @@ func (c *ClientesController) CreateHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// if err := c.Service.Create(cliente); err != nil {
+	responseService := c.Service.Create(cliente)
 
-	// 	var errorValidationMessage utils.ErrorValidationMessage
-	// 	if err = json.Unmarshal([]byte(err.Error()), &errorValidationMessage); err == nil {
-	// 		w.Header().Set("Content-Type", "application/json")
-	// 		w.WriteHeader(http.StatusBadRequest)
-	// 		json.NewEncoder(w).Encode(errorValidationMessage)
-	// 	} else {
-	// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
-	// 	}
-	// 	return
-	// }
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(cliente)
+	if responseService.Status {
+		responseService.Message.Response["Message"] = "Cliente creado exitosamente."
+		writeJSONResponse(w, responseService.Message, http.StatusCreated)
+	} else {
+		writeJSONResponse(w, responseService.Error, http.StatusBadRequest)
+	}
 }
 
 // GetHandler handles GET requests to retrieve a cliente by ID
@@ -118,4 +111,10 @@ func (c *ClientesController) DeleteHandler(w http.ResponseWriter, r *http.Reques
 	// }
 
 	// w.WriteHeader(http.StatusNoContent)
+}
+
+func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
 }
