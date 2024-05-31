@@ -3,8 +3,11 @@ package controllers
 import (
 	"billing-system/models"
 	"billing-system/services"
+	"billing-system/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 )
 
 type ClientesController struct {
@@ -21,16 +24,11 @@ func (c *ClientesController) Test(w http.ResponseWriter, r *http.Request) {
 
 // CreateHandler handles POST requests to create a new cliente
 func (c *ClientesController) Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
 
 	var cliente models.Cliente
-	if err := json.NewDecoder(r.Body).Decode(&cliente); err != nil {
-		http.Error(w, "Failed to decode JSON", http.StatusBadRequest)
-		return
-	}
+
+	handleInvalidMethod(w, r)
+	decodeRequestBody(w, r, &cliente)
 
 	responseService := c.Service.Create(cliente)
 
@@ -117,4 +115,33 @@ func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(data)
+}
+
+func handleInvalidMethod(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut && r.Method != http.MethodPatch {
+		responseData := utils.ErrorMethodMessage{
+			Code:      http.StatusMethodNotAllowed,
+			Status:    "Error",
+			Message:   "Invalid request method",
+			ErrorType: fmt.Sprintf("method %s not supported", r.Method),
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+		json.NewEncoder(w).Encode(responseData)
+		return
+	}
+}
+
+func decodeRequestBody(w http.ResponseWriter, r *http.Request, target interface{}) {
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(target); err != nil {
+		responseData := utils.ErrorJSONdMessage{
+			Code:      http.StatusBadRequest,
+			Status:    "Error",
+			Message:   "Failed to decode JSON",
+			ErrorType: fmt.Sprintf("Failed to decode JSON: %v", err),
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+		json.NewEncoder(w).Encode(responseData)
+		return
+	}
 }
