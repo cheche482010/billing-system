@@ -45,10 +45,10 @@ func (c *ClientesController) GetBy(w http.ResponseWriter, r *http.Request) {
 
 	handleInvalidMethod(w, r, http.MethodGet)
 
-	// var cliente models.Cliente
-	// decodeRequestBody(w, r, &cliente)
+	var cliente models.Cliente
+	decodeRequestBody(w, r, &cliente)
 
-	responseService := c.Service.Get(1)
+	responseService := c.Service.Get(cliente.ID)
 
 	if responseService.Status {
 		successResponse := map[string]interface{}{
