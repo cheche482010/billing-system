@@ -103,14 +103,9 @@ func (c *ClientesController) DeleteHandler(w http.ResponseWriter, r *http.Reques
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
-	// id := chi.URLParam(r, "id")
 
 	// if err := c.Service.Delete(id); err != nil {
-	// 	http.Error(w, "Failed to delete cliente", http.StatusInternalServerError)
-	// 	return
-	// }
 
-	// w.WriteHeader(http.StatusNoContent)
 }
 
 func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
