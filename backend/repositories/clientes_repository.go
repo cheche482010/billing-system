@@ -81,13 +81,23 @@ func (r *ClientesRepository) GetAll() ResponseRepository {
 }
 
 // Update updates a cliente's details
-func (r *ClientesRepository) Update(cliente models.Cliente) error {
+func (r *ClientesRepository) Update(cliente models.Cliente) ResponseRepository {
 	query := `
-	UPDATE Clientes SET nombre =?, apellido =?, cedula =?, telefono =?, correo =?, updated_at = NOW()
-	WHERE id =?
+	UPDATE Clientes SET nombre = :nombre, apellido = :apellido, cedula = :cedula, telefono = :telefono, correo = :correo, updated_at = NOW()
+	WHERE id = :id
 	`
-	_, err := db.DB.Exec(query, cliente.Nombre, cliente.Apellido, cliente.Cedula, cliente.Telefono, cliente.Correo, cliente.ID)
-	return err
+	result, err := db.DB.Exec(query, cliente)
+
+	if err != nil {
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
+	}
+
+	return ResponseRepository{Status: true, Data: rowsAffected}
 }
 
 // Delete removes a cliente by ID
