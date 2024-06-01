@@ -42,11 +42,14 @@ func (r *ClientesRepository) Create(cliente models.Cliente) ResponseRepository {
 }
 
 // Get retrieves a single cliente by ID
-func (r *ClientesRepository) Get(id int) (*models.Cliente, error) {
+func (r *ClientesRepository) Get(id int) ResponseRepository {
 	cliente := &models.Cliente{}
 	query := "SELECT id, nombre, apellido, cedula, telefono, correo, created_at, updated_at FROM Clientes WHERE id =?"
 	err := db.DB.QueryRow(query, id).Scan(&cliente.ID, &cliente.Nombre, &cliente.Apellido, &cliente.Cedula, &cliente.Telefono, &cliente.Correo, &cliente.CreatedAt, &cliente.UpdatedAt)
-	return cliente, err
+	if err != nil {
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
+	}
+	return ResponseRepository{Status: true, Data: cliente, Error: false}
 }
 
 // GetAll retrieves all clientes

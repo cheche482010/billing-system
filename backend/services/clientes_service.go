@@ -73,8 +73,23 @@ func (s *ClientesService) Create(cliente models.Cliente) ResponseService {
 }
 
 // Get wraps the repository's Get method
-func (s *ClientesService) Get(id int) (*models.Cliente, error) {
-	return s.repo.Get(id)
+func (s *ClientesService) Get(id int) ResponseService {
+
+	validationRules := map[string]utils.ValidationCriteria{
+		"id": {
+			Require:   true,
+			IsInteger: true,
+		},
+	}
+
+	validation := utils.ValidateData(id, validationRules)
+
+	if validation.Status {
+		response := s.repo.Get(id)
+		return ResponseService{Status: true, Data: response.Data}
+	} else {
+		return ResponseService{Status: false, Error: validation.Error}
+	}
 }
 
 // GetAll wraps the repository's GetAll method

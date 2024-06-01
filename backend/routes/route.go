@@ -34,6 +34,7 @@ func InitializeRoutes() error {
 	// Establecer rutas permitidas
 	Router.HandleFunc("/clientes/test", clienteController.Test).Methods("GET")
 	Router.HandleFunc("/clientes/get", clienteController.GetAll).Methods("GET")
+	Router.HandleFunc("/clientes/getby", clienteController.GetBy).Methods("GET")
 	Router.HandleFunc("/clientes/create", clienteController.Create).Methods("POST")
 
 	// Manejadores de errores

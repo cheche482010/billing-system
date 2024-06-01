@@ -41,21 +41,25 @@ func (c *ClientesController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetHandler handles GET requests to retrieve a cliente by ID
-func (c *ClientesController) GetHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
+func (c *ClientesController) GetBy(w http.ResponseWriter, r *http.Request) {
+
+	handleInvalidMethod(w, r, http.MethodGet)
+
+	// var cliente models.Cliente
+	// decodeRequestBody(w, r, &cliente)
+
+	responseService := c.Service.Get(1)
+
+	if responseService.Status {
+		successResponse := map[string]interface{}{
+			"Code":   200,
+			"Status": "Success",
+			"Data":   responseService.Data,
+		}
+		writeJSONResponse(w, successResponse, http.StatusOK)
+	} else {
+		writeJSONResponse(w, responseService.Error, http.StatusInternalServerError)
 	}
-
-	// id := chi.URLParam(r, "id")
-
-	// cliente, err := c.Service.Get(id)
-	// if err != nil {
-	// 	http.Error(w, "Failed to get cliente", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// json.NewEncoder(w).Encode(cliente)
 }
 
 // GetAllHandler handles GET requests to retrieve all clientes
