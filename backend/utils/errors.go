@@ -34,3 +34,19 @@ type ErrorValidationMessage struct {
 	Errors    map[string][]string `json:"errors"`
 	Timestamp string              `json:"timestamp"`
 }
+
+type ErrorMethodMessage struct {
+	Code      int    `json:"code"`
+	Status    string `json:"status"`
+	Message   string `json:"message"`
+	ErrorType string `json:"errortype"`
+	Timestamp string `json:"timestamp"`
+}
+
+type ErrorJSONdMessage struct {
+	Code      int    `json:"code"`
+	Status    string `json:"status"`
+	Message   string `json:"message"`
+	ErrorType string `json:"errortype"`
+	Timestamp string `json:"timestamp"`
+}

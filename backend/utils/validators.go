@@ -11,6 +11,7 @@ type ValidationCriteria struct {
 	Pattern   string
 	MinLength int
 	MaxLength int
+	IsInteger bool
 }
 
 type ResponseValidation struct {
@@ -37,6 +38,22 @@ func ValidateData(data interface{}, validations map[string]ValidationCriteria) R
 			}
 			if criteria.MaxLength != 0 && len(v) > criteria.MaxLength {
 				errorMessages[field] = append(errorMessages[field], field+" no debe exceder "+strconv.Itoa(criteria.MaxLength)+" caracteres.")
+			}
+		}
+		if len(errorMessages) > 0 {
+			errorMessage = ErrorMessage("Los datos enviados no son válidos.", errorMessages)
+			return ResponseValidation{Status: false, Error: errorMessage}
+		} else {
+			return ResponseValidation{Status: true}
+		}
+	case int:
+		errorMessages := make(map[string][]string)
+		for field, criteria := range validations {
+			if criteria.Require && v == 0 {
+				errorMessages[field] = append(errorMessages[field], field+" es obligatorio.")
+			}
+			if criteria.IsInteger && v != int(v) {
+				errorMessages[field] = append(errorMessages[field], field+" debe ser un número entero.")
 			}
 		}
 		if len(errorMessages) > 0 {
