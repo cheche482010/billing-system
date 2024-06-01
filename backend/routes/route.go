@@ -36,6 +36,7 @@ func InitializeRoutes() error {
 	Router.HandleFunc("/clientes/get", clienteController.GetAll).Methods("GET")
 	Router.HandleFunc("/clientes/getby", clienteController.GetBy).Methods("GET")
 	Router.HandleFunc("/clientes/create", clienteController.Create).Methods("POST")
+	Router.HandleFunc("/clientes/update", clienteController.Update).Methods("POST")
 
 	// Manejadores de errores
 	Router.NotFoundHandler = http.HandlerFunc(handleNotFound)

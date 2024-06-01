@@ -84,24 +84,18 @@ func (c *ClientesController) GetAll(w http.ResponseWriter, r *http.Request) {
 
 // UpdateHandler handles PUT/PATCH requests to update a cliente
 func (c *ClientesController) UpdateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut && r.Method != http.MethodPatch {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
 	var cliente models.Cliente
-	if err := json.NewDecoder(r.Body).Decode(&cliente); err != nil {
-		http.Error(w, "Failed to decode JSON", http.StatusBadRequest)
-		return
-	}
 
-	if err := c.Service.Update(cliente); err != nil {
-		http.Error(w, "Failed to update cliente", http.StatusInternalServerError)
-		return
-	}
+	handleInvalidMethod(w, r, http.MethodPost)
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(cliente)
+	responseService := c.Service.Update(cliente)
+
+	if responseService.Status {
+		responseService.Message.Response["Message"] = "Cliente actualizado exitosamente."
+		writeJSONResponse(w, responseService.Message, http.StatusCreated)
+	} else {
+		writeJSONResponse(w, responseService.Error, http.StatusBadRequest)
+	}
 }
 
 // DeleteHandler handles DELETE requests to remove a cliente
@@ -109,14 +103,9 @@ func (c *ClientesController) DeleteHandler(w http.ResponseWriter, r *http.Reques
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
-	// id := chi.URLParam(r, "id")
 
 	// if err := c.Service.Delete(id); err != nil {
-	// 	http.Error(w, "Failed to delete cliente", http.StatusInternalServerError)
-	// 	return
-	// }
 
-	// w.WriteHeader(http.StatusNoContent)
 }
 
 func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
