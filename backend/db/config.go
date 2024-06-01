@@ -4,6 +4,6 @@ const (
 	Host     = "localhost"
 	Port     = "3306"
 	User     = "root"
-	Passwd   = "root"
+	Passwd   = ""
 	Database = "billing-system"
 )
