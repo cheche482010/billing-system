@@ -27,7 +27,7 @@ func (c *ClientesController) Create(w http.ResponseWriter, r *http.Request) {
 
 	var cliente models.Cliente
 
-	handleInvalidMethod(w, r)
+	handleInvalidMethod(w, r, http.MethodPost)
 	decodeRequestBody(w, r, &cliente)
 
 	responseService := c.Service.Create(cliente)
@@ -59,19 +59,23 @@ func (c *ClientesController) GetHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 // GetAllHandler handles GET requests to retrieve all clientes
-func (c *ClientesController) GetAllHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
+func (c *ClientesController) GetAll(w http.ResponseWriter, r *http.Request) {
+
+	handleInvalidMethod(w, r, http.MethodGet)
+
+	responseService := c.Service.GetAll()
+
+	if responseService.Status {
+		successResponse := map[string]interface{}{
+			"Code":   200,
+			"Status": "Success",
+			"Data":   responseService.Data,
+		}
+		writeJSONResponse(w, successResponse, http.StatusOK)
+	} else {
+		writeJSONResponse(w, responseService.Error, http.StatusInternalServerError)
 	}
 
-	clientes, err := c.Service.GetAll()
-	if err != nil {
-		http.Error(w, "Failed to get all clientes", http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(clientes)
 }
 
 // UpdateHandler handles PUT/PATCH requests to update a cliente
@@ -117,8 +121,8 @@ func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) 
 	json.NewEncoder(w).Encode(data)
 }
 
-func handleInvalidMethod(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut && r.Method != http.MethodPatch {
+func handleInvalidMethod(w http.ResponseWriter, r *http.Request, allowedMethod string) {
+	if r.Method != allowedMethod {
 		responseData := utils.ErrorMethodMessage{
 			Code:      http.StatusMethodNotAllowed,
 			Status:    "Error",

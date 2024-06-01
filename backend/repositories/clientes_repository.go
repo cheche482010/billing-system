@@ -18,8 +18,8 @@ func NewClientesRepository(db *sql.DB) *ClientesRepository {
 
 type ResponseRepository struct {
 	Status bool
-	ID     int64
-	Error  utils.ErrorSqlMessage
+	Data   interface{}
+	Error  interface{}
 }
 
 // Create inserts a new cliente into the database
@@ -37,7 +37,7 @@ func (r *ClientesRepository) Create(cliente models.Cliente) ResponseRepository {
 		if err != nil {
 			return ResponseRepository{Status: false, Error: ErrorMessage(err)}
 		}
-		return ResponseRepository{Status: true, ID: lastID}
+		return ResponseRepository{Status: true, Data: lastID}
 	}
 }
 
@@ -50,23 +50,31 @@ func (r *ClientesRepository) Get(id int) (*models.Cliente, error) {
 }
 
 // GetAll retrieves all clientes
-func (r *ClientesRepository) GetAll() ([]*models.Cliente, error) {
+func (r *ClientesRepository) GetAll() ResponseRepository {
 	clientes := []*models.Cliente{}
-	query := "SELECT id, nombre, apellido, cedula, telefono, correo, created_at, updated_at FROM Clientes"
+	query := "SELECT id, nombre, apellido, cedula, telefono, correo, created_at, updated_at FROM Clientes ORDER BY apellido ASC"
 	rows, err := db.DB.Query(query)
+
 	if err != nil {
-		return nil, err
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
 		var cliente models.Cliente
 		if err := rows.Scan(&cliente.ID, &cliente.Nombre, &cliente.Apellido, &cliente.Cedula, &cliente.Telefono, &cliente.Correo, &cliente.CreatedAt, &cliente.UpdatedAt); err != nil {
-			return nil, err
+			return ResponseRepository{Status: false, Error: ErrorMessage(err)}
 		}
 		clientes = append(clientes, &cliente)
 	}
-	return clientes, nil
+	if err := rows.Err(); err != nil {
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
+	}
+
+	data := interface{}(clientes)
+
+	return ResponseRepository{Status: true, Data: data, Error: false}
 }
 
 // Update updates a cliente's details

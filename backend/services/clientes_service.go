@@ -18,10 +18,11 @@ func NewClientesService(repo *repositories.ClientesRepository) *ClientesService 
 type ResponseService struct {
 	Status  bool
 	Error   interface{}
-	Message ResponseSuccess
+	Data    interface{}
+	Message Response
 }
 
-type ResponseSuccess struct {
+type Response struct {
 	Code      int                    `json:"code"`
 	Status    string                 `json:"status"`
 	Message   string                 `json:"message"`
@@ -47,7 +48,7 @@ func (s *ClientesService) Create(cliente models.Cliente) ResponseService {
 		response := s.repo.Create(cliente)
 
 		if response.Status {
-			resp := ResponseSuccess{
+			resp := Response{
 				Code:      200,
 				Status:    "success",
 				Message:   "Request successfully processed",
@@ -56,7 +57,7 @@ func (s *ClientesService) Create(cliente models.Cliente) ResponseService {
 				Response: map[string]interface{}{
 					"Code": 201,
 					"Data": map[string]interface{}{
-						"id": response.ID,
+						"id": response.Data,
 					},
 					"Message": "",
 				},
@@ -77,7 +78,7 @@ func (s *ClientesService) Get(id int) (*models.Cliente, error) {
 }
 
 // GetAll wraps the repository's GetAll method
-func (s *ClientesService) GetAll() ([]*models.Cliente, error) {
+func (s *ClientesService) GetAll() repositories.ResponseRepository {
 	return s.repo.GetAll()
 }
 
