@@ -101,10 +101,29 @@ func (r *ClientesRepository) Update(cliente models.Cliente) ResponseRepository {
 }
 
 // Delete removes a cliente by ID
-func (r *ClientesRepository) Delete(id int) error {
+func (r *ClientesRepository) Delete(id int) ResponseRepository {
 	query := "DELETE FROM Clientes WHERE id =?"
 	_, err := db.DB.Exec(query, id)
-	return err
+	if err != nil {
+		return ResponseRepository{Status: false, Error: ErrorMessage(err)}
+	}
+	return ResponseRepository{Status: true}
+}
+
+func (r *ClientesRepository) SoftDelete(id int) error {
+
+	client := db.StatusTable{
+		TableName: "Clientes",
+		ID:        1,
+		IsActive:  false,
+	}
+
+	_, err := db.SwitchStatus(client)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ErrorMessage(err error) utils.ErrorSqlMessage {
