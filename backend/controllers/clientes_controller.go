@@ -83,7 +83,7 @@ func (c *ClientesController) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateHandler handles PUT/PATCH requests to update a cliente
-func (c *ClientesController) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ClientesController) Update(w http.ResponseWriter, r *http.Request) {
 	var cliente models.Cliente
 
 	handleInvalidMethod(w, r, http.MethodPost)
@@ -99,13 +99,18 @@ func (c *ClientesController) UpdateHandler(w http.ResponseWriter, r *http.Reques
 }
 
 // DeleteHandler handles DELETE requests to remove a cliente
-func (c *ClientesController) DeleteHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+func (c *ClientesController) Delete(w http.ResponseWriter, r *http.Request) {
+	var cliente models.Cliente
+
+	handleInvalidMethod(w, r, http.MethodPost)
+
+	responseService := c.Service.Delete(cliente.ID)
+
+	if responseService.Status {
+		writeJSONResponse(w, responseService.Message, http.StatusCreated)
+	} else {
+		writeJSONResponse(w, responseService.Error, http.StatusBadRequest)
 	}
-
-	// if err := c.Service.Delete(id); err != nil {
-
 }
 
 func writeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int) {
