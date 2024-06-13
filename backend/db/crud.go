@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 )
 
 type Response struct {
@@ -12,6 +13,12 @@ type Response struct {
 	Error   bool        `json:"error"`
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
+}
+
+type StatusTable struct {
+	TableName string
+	ID        int
+	IsActive  bool
 }
 
 func Insert(sqlQuery string, params map[string]interface{}) error {
@@ -84,7 +91,6 @@ func Delete(sqlQuery string, params map[string]interface{}) error {
 }
 
 func GetBy(sqlQuery string, params map[string]interface{}) (*sql.Row, error) {
-	// Convertir el mapa de parámetros a una lista de interfaces
 	paramsList := make([]interface{}, len(params))
 	i := 0
 	for _, paramValue := range params {
@@ -94,4 +100,20 @@ func GetBy(sqlQuery string, params map[string]interface{}) (*sql.Row, error) {
 
 	row := DB.QueryRow(sqlQuery, paramsList...)
 	return row, nil
+}
+
+func SwitchStatus(params StatusTable) (sql.Result, error) {
+	query := "UPDATE " + params.TableName + " SET is_active =? WHERE id =" + strconv.Itoa(params.ID)
+	result, err := DB.Exec(query, params.IsActive)
+	return result, err
+}
+
+func CheckStatus(params StatusTable) (bool, error) {
+	query := "SELECT is_active FROM? WHERE id =?"
+	var status bool
+	err := DB.QueryRow(query, params.TableName, params.ID).Scan(&status)
+	if err != nil {
+		return false, err
+	}
+	return status, nil
 }

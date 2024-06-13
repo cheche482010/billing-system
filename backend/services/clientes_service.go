@@ -48,21 +48,14 @@ func (s *ClientesService) Create(cliente models.Cliente) ResponseService {
 		response := s.repo.Create(cliente)
 
 		if response.Status {
-			resp := Response{
-				Code:      200,
-				Status:    "success",
-				Message:   "Request successfully processed",
-				Error:     false,
-				Timestamp: time.Now().Format(time.RFC3339),
-				Response: map[string]interface{}{
-					"Code": 201,
-					"Data": map[string]interface{}{
-						"id": response.Data,
-					},
-					"Message": "",
+			resp := map[string]interface{}{
+				"Code": 201,
+				"Data": map[string]interface{}{
+					"id": response.Data,
 				},
+				"Message": "",
 			}
-			return ResponseService{Status: true, Message: resp}
+			return ResponseService{Status: true, Message: buildResponse(resp)}
 		} else {
 			return ResponseService{Status: false, Error: response.Error}
 		}
@@ -115,21 +108,14 @@ func (s *ClientesService) Update(cliente models.Cliente) ResponseService {
 		response := s.repo.Update(cliente)
 
 		if response.Status {
-			resp := Response{
-				Code:      200,
-				Status:    "success",
-				Message:   "Request successfully processed",
-				Error:     false,
-				Timestamp: time.Now().Format(time.RFC3339),
-				Response: map[string]interface{}{
-					"Code": 201,
-					"Data": map[string]interface{}{
-						"id": response.Data,
-					},
-					"Message": "",
+			resp := map[string]interface{}{
+				"Code": 201,
+				"Data": map[string]interface{}{
+					"id": response.Data,
 				},
+				"Message": "",
 			}
-			return ResponseService{Status: true, Message: resp}
+			return ResponseService{Status: true, Message: buildResponse(resp)}
 		} else {
 			return ResponseService{Status: false, Error: response.Error}
 		}
@@ -139,6 +125,45 @@ func (s *ClientesService) Update(cliente models.Cliente) ResponseService {
 }
 
 // Delete wraps the repository's Delete method
-func (s *ClientesService) Delete(id int) error {
-	return s.repo.Delete(id)
+func (s *ClientesService) Delete(id int) ResponseService {
+
+	validationRules := map[string]utils.ValidationCriteria{
+		"id": {
+			Require:   true,
+			IsInteger: true,
+		},
+	}
+
+	validation := utils.ValidateData(id, validationRules)
+
+	if !validation.Status {
+		return ResponseService{Status: false, Error: validation.Error}
+	}
+
+	response := s.repo.Delete(id)
+
+	if response.Status {
+		resp := map[string]interface{}{
+			"Code":    201,
+			"Message": "Client deleted successfully",
+		}
+		return ResponseService{Status: true, Message: buildResponse(resp)}
+	} else {
+		return ResponseService{Status: false, Error: response.Error}
+	}
+}
+
+func (s *ClientesService) SoftDelete(id int) error {
+	return s.repo.SoftDelete(id)
+}
+
+func buildResponse(responseMap map[string]interface{}) Response {
+	return Response{
+		Code:      200,
+		Status:    "success",
+		Message:   "Request successfully processed",
+		Error:     false,
+		Timestamp: time.Now().Format(time.RFC3339),
+		Response:  responseMap,
+	}
 }
