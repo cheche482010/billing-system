@@ -1,3 +1,4 @@
+
 # Sistema de Facturación
 
 Este proyecto es un sistema de facturación completo, construido con tecnologías modernas: un backend en Go y un frontend en React. El sistema permite la gestión de clientes, facturas, y transacciones, ofreciendo una interfaz intuitiva para administrar y realizar seguimiento de las facturas emitidas.
@@ -6,29 +7,34 @@ Este proyecto es un sistema de facturación completo, construido con tecnología
 
 El proyecto está dividido en dos principales partes: el backend en Go y el frontend en React. A continuación, se describe la estructura de carpetas y archivos clave de cada parte:
 
-### Backend (Go)
+- **Controllers**
+  - `clientes_controller.go`
 
-/backend 
-├── controllers 
-│ └── clientes_controller.go 
-├── db 
-│ ├── DB.sql 
-│ ├── config.go 
-│ ├── crud.go 
-│ └── db.go 
-├── models 
-│ └── clientes_model.go 
-├── repositories 
-│ └── clientes_repository.go 
-├── routes 
-│ └── route.go 
-├── services │ 
-└── clientes_service.go 
-└── utils 
-├── errors.go 
-├── pattern.go 
-└── validators.go
+- **Db**
+  - `DB.sql`
+  - `config.go`
+  - `crud.go`
+  - `db.go`
 
+- **Models**
+  - `clientes_model.go`
+
+- **Repositories**
+  - `clientes_repository.go`
+
+- **Routes**
+  - `route.go`
+
+- **Services**
+  - `clientes_service.go`
+
+- **Utils**
+  - `errors.go`
+  - `pattern.go`
+  - `validators.go`
+
+
+#### Descripcion:
 
 - **Controllers**: Contiene los controladores que manejan las solicitudes HTTP.
 - **Db**: Gestiona la conexión a la base de datos y operaciones CRUD.
@@ -40,27 +46,30 @@ El proyecto está dividido en dos principales partes: el backend en Go y el fron
 
 ### Frontend (React)
 
-/frontend 
-├── public 
-│ ├── favicon.ico 
-│ └──...
-├── src 
-│ ├── App.js 
-│ ├── components 
-│ │ └── navbar 
-│ │ ├── Navbar.js 
-│ │ └── Navbar.scss 
-│ ├── index.css 
-│ ├── index.js 
-│ ├── pages 
-│ │ └── login 
-│ │ ├── Login.js 
-│ │ └── Login.scss 
-│ ├── reportWebVitals.js 
-│ ├── routes 
-│ │ └── routes.js 
-│ └──...
+- **Frontend**
 
+  - **Public**
+    - `favicon.ico`
+    -... (otros archivos públicos)
+
+  - **Src**
+    - `App.js`
+    - **Components**
+      - **Navbar**
+        - `Navbar.js`
+        - `Navbar.scss`
+    - `index.css`
+    - `index.js`
+    - **Pages**
+      - **Login**
+        - `Login.js`
+        - `Login.scss`
+    - `reportWebVitals.js`
+    - **Routes**
+      - `routes.js`
+    -... (otros archivos dentro de src)
+
+#### Descripcion:
 
 - **Public**: Contiene recursos estáticos como imágenes y archivos de configuración web.
 - **Src**: La carpeta principal donde se encuentra todo el código JavaScript y React.
