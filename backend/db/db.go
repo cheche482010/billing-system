@@ -54,3 +54,8 @@ func Connect() bool {
 func GetDB() *sql.DB {
 	return DB
 }
+
+func SetupGoose() {
+	goose.SetDialect("mysql")
+	goose.UseDatabase(GetDB())
+}
