@@ -1,0 +1,10 @@
+CREATE TABLE historial_precios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    producto_id INT NOT NULL,
+    fecha DATE NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (producto_id) REFERENCES productos(id),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
