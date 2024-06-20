@@ -1,0 +1,10 @@
+CREATE TABLE usuarios_roles_permisos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    rol VARCHAR(20) NOT NULL,
+    permiso VARCHAR(255) NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

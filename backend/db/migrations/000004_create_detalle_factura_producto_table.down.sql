@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS detalle_factura_producto;

@@ -39,6 +39,9 @@ func InitializeRoutes() error {
 	Router.HandleFunc("/clientes/update", clienteController.Update).Methods("POST")
 	Router.HandleFunc("/clientes/delete", clienteController.Delete).Methods("POST")
 
+	// Ruta para ejecutar migraciones
+	Router.HandleFunc("/migrate", controllers.MigrateDB).Methods("GET")
+
 	// Manejadores de errores
 	Router.NotFoundHandler = http.HandlerFunc(handleNotFound)
 	Router.MethodNotAllowedHandler = http.HandlerFunc(handleMethodNotAllowed)
