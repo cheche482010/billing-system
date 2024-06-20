@@ -19,8 +19,6 @@ func main() {
 	} else {
 		color.Green("Compilación Exitosa!")
 	}
-	
-	db.SetupGoose()
 
 	fmt.Println("Ahora puede ver el Backend en el navegador.")
 	color.Set(color.FgWhite)
