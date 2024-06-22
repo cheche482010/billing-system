@@ -4,6 +4,8 @@ CREATE TABLE usuarios (
     contraseña VARCHAR(255) NOT NULL,
     tipo ENUM('cajero', 'admin') NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
+    blocked BOOLEAN DEFAULT FALSE,
+    token text NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
