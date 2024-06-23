@@ -24,12 +24,21 @@ func (c *AutenticacionController) Login(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	usuario, err := c.Service.IniciarSesion(creds.Nombre, creds.Contraseña)
+	authResponse, err := c.Service.IniciarSesion(creds.Nombre, creds.Contraseña)
+	response := map[string]interface{}{
+		"status": authResponse.Status,
+		"data":   authResponse.Data,
+	}
+
+	httpStatus := http.StatusOK
 	if err != nil {
-		http.Error(w, "Credenciales inválidas", http.StatusUnauthorized)
-		return
+		response["message"] = "Login failed: " + err.Error()
+		httpStatus = http.StatusUnauthorized
+	} else {
+		response["message"] = "Login successful"
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(usuario)
+	w.WriteHeader(httpStatus)
+	json.NewEncoder(w).Encode(response)
 }
