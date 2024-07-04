@@ -8,6 +8,8 @@ type Usuarios struct {
 	IsActive   bool   `json:"is_active"`
 	Blocked    bool   `json:"blocked"`
 	Token      string `json:"token"`
+	SessionToken  string    `json:"session_token"`
+	IsLogged  bool       `json:"is_logged"`
 	CreatedAt  string `json:"created_at"`
 	UpdatedAt  string `json:"updated_at"`
 }

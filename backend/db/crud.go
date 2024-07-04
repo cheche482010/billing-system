@@ -108,12 +108,17 @@ func SwitchStatus(params StatusTable) (sql.Result, error) {
 	return result, err
 }
 
-func CheckStatus(params StatusTable) (bool, error) {
-	query := "SELECT is_active FROM? WHERE id =?"
+func Check(params StatusTable) (bool, error) {
+	query := "SELECT " + params.Colum + " FROM " + params.TableName + " WHERE id = ? AND " + params.Colum + " = ?"
+	
 	var status bool
-	err := DB.QueryRow(query, params.TableName, params.ID).Scan(&status)
+	err := DB.QueryRow(query, params.ID, params.Value).Scan(&status)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, err
+		}
 		return false, err
 	}
 	return status, nil
 }
+
