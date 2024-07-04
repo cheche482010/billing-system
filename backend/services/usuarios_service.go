@@ -5,6 +5,9 @@ import (
 	"billing-system/repositories"
 	"math/rand"
 	"time"
+	"crypto/rand"
+	"encoding/base64"
+	"crypto/sha256"
 )
 
 type AutenticacionService struct {
@@ -16,13 +19,16 @@ func NewAutenticacionService(repo *repositories.UsuariosRepository) *Autenticaci
 }
 
 func generateSessionToken() string {
-	rand.Seed(time.Now().UnixNano())
-	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	b := make([]rune, 32)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+	bytes := make([]byte, 32)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return ""
 	}
-	return string(b)
+
+	hashedBytes := sha256.Sum256(bytes)
+	token := base64.RawURLEncoding.EncodeToString(hashedBytes[:])
+
+	return token
 }
 
 type AutenticacionResponse struct {
